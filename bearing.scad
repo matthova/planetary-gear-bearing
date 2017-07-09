@@ -1,4 +1,5 @@
 // Variables
+nudge = 0.05;
 D = 51.7; // outer diameter of ring
 T = 15; // thickness
 tol = 0.15; // clearance
@@ -11,27 +12,34 @@ w = 6.7;// width of hexagonal hole
 DR = 0.5 * 1;// maximum depth ratio of teeth
 // End Variables
 
-// Derived Variables
-m = round(number_of_planets);
-np = round(number_of_teeth_on_planets);
-ns1 = approximate_number_of_teeth_on_sun;
-k1 = round(2 / m * (ns1 + np));
-k = (k1 * m) % 2 != 0 ? k1 + 1 : k1;
-ns = (k * m / 2) - np;
-nr = ns + (2 * np);
-pitchD = 0.9 * D / (1 + min(PI / (2 * nr * tan(P)), PI * DR / nr));
-pitch = pitchD * PI / nr;
-helix_angle = atan(2 * nTwist * pitch / T);
-phi = $t * 360 / m;
-// End Derived Variables
+planetary_gear_set();
 
-translate([0, 0, T / 2]){
+module planetary_gear_set(
+// Add custom variables here
+) {
+  // Derived Variables
+  m = round(number_of_planets);
+  np = round(number_of_teeth_on_planets);
+  ns1 = approximate_number_of_teeth_on_sun;
+  k1 = round(2 / m * (ns1 + np));
+  k = (k1 * m) % 2 != 0 ? k1 + 1 : k1;
+  ns = (k * m / 2) - np;
+  nr = ns + (2 * np);
+  pitchD = 0.9 * D / (1 + min(PI / (2 * nr * tan(P)), PI * DR / nr));
+  pitch = pitchD * PI / nr;
+  helix_angle = atan(2 * nTwist * pitch / T);
+  phi = $t * 360 / m;
+  // End Derived Variables
+
+  // Annulus
   difference(){
-    cylinder(r = D / 2, h = T, center = true, $fn = 100);
+    cylinder(r = D / 2, h = T, $fn = 100);
 
-    herringbone(nr, pitch, P, DR, -tol, helix_angle, T + 0.2);
+    translate([0, 0, -nudge])
+    herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
   }
 
+  // Sun
   rotate([0, 0, (np + 1) * 180 / ns + phi * (ns + np) * 2 / ns])
   difference(){
     mirror([0, 1, 0])
@@ -40,6 +48,7 @@ translate([0, 0, T / 2]){
     cylinder(r = w / sqrt(3), h = T + 1, center = true, $fn = 6);
   }
 
+  // Planets
   for(i = [1:m]) {
     rotate([0, 0, i * 360 / m + phi])
     translate([pitchD / 2 * (ns + np) / nr, 0, 0])
@@ -81,7 +90,9 @@ module herringbone(
   helix_angle = 0,
   gear_thickness = 5
 ){
+  translate([0, 0, gear_thickness / 2])
   union(){
+    translate([0, 0, -nudge / 2])
     gear(number_of_teeth,
       circular_pitch,
       pressure_angle,
@@ -91,6 +102,7 @@ module herringbone(
       gear_thickness / 2
     );
 
+    translate([0, 0, nudge / 2])
     mirror([0, 0, 1])
     gear(number_of_teeth,
       circular_pitch,
