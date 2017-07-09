@@ -30,14 +30,6 @@ translate([0, 0, T / 2]){
     cylinder(r = D / 2, h = T, center = true, $fn = 100);
 
     herringbone(nr, pitch, P, DR, -tol, helix_angle, T + 0.2);
-
-    difference(){
-      translate([0, -D / 2, 0])
-      rotate([90, 0, 0])
-      monogram(h = 10);
-
-      cylinder(r = (D / 2) - 0.25, h = T + 2, center = true, $fn = 100);
-    }
   }
 
   rotate([0, 0, (np + 1) * 180 / ns + phi * (ns + np) * 2 / ns])
@@ -77,24 +69,6 @@ module rack(
       translate([circular_pitch * (i - number_of_teeth / 2 - 0.5), 0])
       polygon(points = [[-circular_pitch / 2, -addendum], [circular_pitch / 2, -addendum], [0, addendum]]);
     }
-  }
-}
-
-module monogram(h = 1) {
-  linear_extrude(height = h, center = true)
-  translate(-[3, 2.5])
-  union(){
-    difference(){
-      square([4, 5]);
-
-      translate([1, 1])
-      square([2, 3]);
-    }
-
-    square([6, 1]);
-
-    translate([0, 2])
-    square([2, 1]);
   }
 }
 
