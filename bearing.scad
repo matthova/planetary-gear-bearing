@@ -1,21 +1,27 @@
-// Variables
 nudge = 0.05;
-D = 51.7; // outer diameter of ring
-T = 15; // thickness
-tol = 0.15; // clearance
-number_of_planets = 5;
-number_of_teeth_on_planets = 7;
-approximate_number_of_teeth_on_sun = 9;
-P = 45;// pressure angle [30:60]
-nTwist = 1;// number of teeth to twist across
-w = 6.7;// width of hexagonal hole
-DR = 0.5 * 1;// maximum depth ratio of teeth
-// End Variables
 
-planetary_gear_set();
+// planetary_gear_set(
+//   D = 60,
+//   T = 15,
+//   tol = 0.15,
+//   number_of_planets = 3,
+//   number_of_teeth_on_planets = 10,
+//   approximate_number_of_teeth_on_sun = 20,
+//   P = 30,
+//   w = 5
+// );
 
 module planetary_gear_set(
-// Add custom variables here
+  D = 51.7, // outer diameter of ring
+  T = 15, // thickness
+  tol = 0.15, // clearance
+  number_of_planets = 5,
+  number_of_teeth_on_planets = 7,
+  approximate_number_of_teeth_on_sun = 9,
+  P = 45, // pressure angle [30:60]
+  nTwist = 1, // number of teeth to twist across
+  w = 6.7, // width of hexagonal hole
+  DR = 0.5 * 1// maximum depth ratio of teeth
 ) {
   // Derived Variables
   m = round(number_of_planets);
