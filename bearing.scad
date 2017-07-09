@@ -21,7 +21,10 @@ module planetary_gear_set(
   P = 45, // pressure angle [30:60]
   nTwist = 1, // number of teeth to twist across
   w = 6.7, // width of hexagonal hole
-  DR = 0.5 * 1// maximum depth ratio of teeth
+  DR = 0.5 * 1,// maximum depth ratio of teeth
+  annulus = true,
+  sun = true,
+  planets = true,
 ) {
   // Derived Variables
   m = round(number_of_planets);
@@ -38,28 +41,34 @@ module planetary_gear_set(
   // End Derived Variables
 
   // Annulus
-  difference(){
-    cylinder(r = D / 2, h = T, $fn = 100);
+  if (annulus) {
+    difference(){
+      cylinder(r = D / 2, h = T, $fn = 100);
 
-    translate([0, 0, -nudge])
-    herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+      translate([0, 0, -nudge])
+      herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+    }
   }
 
   // Sun
-  rotate([0, 0, (np + 1) * 180 / ns + phi * (ns + np) * 2 / ns])
-  difference(){
-    mirror([0, 1, 0])
-    herringbone(ns, pitch, P, DR, tol, helix_angle, T);
+  if (sun) {
+    rotate([0, 0, (np + 1) * 180 / ns + phi * (ns + np) * 2 / ns])
+    difference(){
+      mirror([0, 1, 0])
+      herringbone(ns, pitch, P, DR, tol, helix_angle, T);
 
-    cylinder(r = w / sqrt(3), h = T + 1, center = true, $fn = 6);
+      cylinder(r = w / sqrt(3), h = T + 1, center = true, $fn = 6);
+    }
   }
 
   // Planets
-  for(i = [1:m]) {
-    rotate([0, 0, i * 360 / m + phi])
-    translate([pitchD / 2 * (ns + np) / nr, 0, 0])
-    rotate([0, 0, i * ns / m * 360 / np - phi * (ns + np) / np - phi])
-    herringbone(np, pitch, P, DR, tol, helix_angle, T);
+  if (planets) {
+    for(i = [1:m]) {
+      rotate([0, 0, i * 360 / m + phi])
+      translate([pitchD / 2 * (ns + np) / nr, 0, 0])
+      rotate([0, 0, i * ns / m * 360 / np - phi * (ns + np) / np - phi])
+      herringbone(np, pitch, P, DR, tol, helix_angle, T);
+    }
   }
 }
 
