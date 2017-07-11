@@ -1,24 +1,23 @@
 nudge = 0.05;
 
 planetary_gear_set(
-  D = 60 * 2,
+  D = 120,
   T = 15,
   tol = 0,
   number_of_planets = 3,
   number_of_teeth_on_planets = 10,
   approximate_number_of_teeth_on_sun = 20,
   P = 30,
-  w = 0,
-  p_hole = 2 * 2,
+  p_hole = 4,
   p_fn = 100,
-  s_hole = 4 * 2,
+  s_hole = 8,
   s_fn = 4,
-  a_hole = 2 * 2,
+  a_hole = 4,
   a_fn = 4,
   annulus = true,
   sun = true,
   planets = true,
-  flat = true
+  flat = false
 );
 
 module planetary_gear_set(
@@ -30,7 +29,6 @@ module planetary_gear_set(
   approximate_number_of_teeth_on_sun = 9,
   P = 30, // pressure angle [30:60]
   nTwist = 1, // number of teeth to twist across
-  w = 6.7, // width of hexagonal hole
   p_hole = 2,
   p_fn = 100,
   s_hole = 2,
@@ -64,7 +62,7 @@ module planetary_gear_set(
         circle(r = D / 2, $fn = 100);
 
         herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2, flat = true);
-        
+
         for(i = [0:2])
         rotate([0, 0, 120*i])
         translate([D / 2 * .9, 0, 0])
@@ -75,8 +73,15 @@ module planetary_gear_set(
       difference(){
         cylinder(r = D / 2, h = T, $fn = 100);
 
-        translate([0, 0, -nudge])
-        herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+        translate([0, 0, -nudge]) {
+          herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+
+          for(i = [0:2])
+          rotate([0, 0, 120*i])
+          translate([D / 2 * .9, 0, 0])
+          rotate([0, 0, 360 / a_fn / 2])
+          cylinder(r = a_hole, $fn = a_fn, h = T + nudge * 2);
+        }
       }
     }
   }
@@ -96,7 +101,7 @@ module planetary_gear_set(
         mirror([0, 1, 0])
         herringbone(ns, pitch, P, DR, tol, helix_angle, T);
 
-        cylinder(r = s_hole, h = T + 1, center = true, $fn = s_fn);
+        cylinder(r = s_hole, h = T + 1, $fn = s_fn);
       }
     }
   }
@@ -112,7 +117,7 @@ module planetary_gear_set(
         if (flat) {
             circle(r = p_hole, $fn = p_fn);
         } else {
-            cylinder(r = p_hole, center = true, $fn = p_fn);
+            cylinder(r = p_hole, h = T, $fn = p_fn);
         }
       }
     }
