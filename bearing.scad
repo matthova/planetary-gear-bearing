@@ -1,15 +1,19 @@
 nudge = 0.05;
 
-// planetary_gear_set(
-//   D = 60,
-//   T = 15,
-//   tol = 0.15,
-//   number_of_planets = 3,
-//   number_of_teeth_on_planets = 10,
-//   approximate_number_of_teeth_on_sun = 20,
-//   P = 30,
-//   w = 5
-// );
+planetary_gear_set(
+  D = 60,
+  T = 15,
+  tol = 0.15,
+  number_of_planets = 3,
+  number_of_teeth_on_planets = 10,
+  approximate_number_of_teeth_on_sun = 20,
+  P = 30,
+  w = 0,
+  annulus = true,
+  sun = true,
+  planets = true,
+  flat = true
+);
 
 module planetary_gear_set(
   D = 51.7, // outer diameter of ring
@@ -25,6 +29,7 @@ module planetary_gear_set(
   annulus = true,
   sun = true,
   planets = true,
+  flat = false
 ) {
   // Derived Variables
   m = round(number_of_planets);
@@ -42,22 +47,39 @@ module planetary_gear_set(
 
   // Annulus
   if (annulus) {
-    difference(){
-      cylinder(r = D / 2, h = T, $fn = 100);
+    if (flat) {
+      difference(){
+        circle(r = D / 2, $fn = 100);
 
-      translate([0, 0, -nudge])
-      herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+        herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2, flat = true);
+      }
+    } else {
+      difference(){
+        cylinder(r = D / 2, h = T, $fn = 100);
+
+        translate([0, 0, -nudge])
+        herringbone(nr, pitch, P, DR, -tol, helix_angle, T + nudge * 2);
+      }
     }
   }
 
   // Sun
   if (sun) {
     rotate([0, 0, (np + 1) * 180 / ns + phi * (ns + np) * 2 / ns])
-    difference(){
-      mirror([0, 1, 0])
-      herringbone(ns, pitch, P, DR, tol, helix_angle, T);
+    if (flat) {
+      difference(){
+        mirror([0, 1, 0])
+        herringbone(ns, pitch, P, DR, tol, helix_angle, T, flat = true);
 
-      cylinder(r = w / sqrt(3), h = T + 1, center = true, $fn = 6);
+        circle(r = w / sqrt(3), center = true, $fn = 6);
+      }
+    } else {
+      difference(){
+        mirror([0, 1, 0])
+        herringbone(ns, pitch, P, DR, tol, helix_angle, T);
+
+        cylinder(r = w / sqrt(3), h = T + 1, center = true, $fn = 6);
+      }
     }
   }
 
@@ -67,7 +89,7 @@ module planetary_gear_set(
       rotate([0, 0, i * 360 / m + phi])
       translate([pitchD / 2 * (ns + np) / nr, 0, 0])
       rotate([0, 0, i * ns / m * 360 / np - phi * (ns + np) / np - phi])
-      herringbone(np, pitch, P, DR, tol, helix_angle, T);
+      herringbone(np, pitch, P, DR, tol, helix_angle, T, flat = flat);
     }
   }
 }
@@ -103,30 +125,43 @@ module herringbone(
   depth_ratio = 1,
   clearance = 0,
   helix_angle = 0,
-  gear_thickness = 5
+  gear_thickness = 5,
+  flat = false,
 ){
-  translate([0, 0, gear_thickness / 2])
-  union(){
-    translate([0, 0, -nudge / 2])
+  if (flat) {
     gear(number_of_teeth,
       circular_pitch,
       pressure_angle,
       depth_ratio,
       clearance,
       helix_angle,
-      gear_thickness / 2
+      gear_thickness / 2,
+      flat = true
     );
+  } else {
+    translate([0, 0, gear_thickness / 2])
+    union(){
+      translate([0, 0, -nudge / 2])
+      gear(number_of_teeth,
+        circular_pitch,
+        pressure_angle,
+        depth_ratio,
+        clearance,
+        helix_angle,
+        gear_thickness / 2
+      );
 
-    translate([0, 0, nudge / 2])
-    mirror([0, 0, 1])
-    gear(number_of_teeth,
-      circular_pitch,
-      pressure_angle,
-      depth_ratio,
-      clearance,
-      helix_angle,
-      gear_thickness / 2
-    );
+      translate([0, 0, nudge / 2])
+      mirror([0, 0, 1])
+      gear(number_of_teeth,
+        circular_pitch,
+        pressure_angle,
+        depth_ratio,
+        clearance,
+        helix_angle,
+        gear_thickness / 2
+      );
+    }
   }
 }
 
