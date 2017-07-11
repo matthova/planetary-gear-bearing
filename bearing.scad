@@ -1,24 +1,24 @@
 nudge = 0.05;
 
-planetary_gear_set(
-  D = 120,
-  T = 15,
-  tol = 0,
-  number_of_planets = 3,
-  number_of_teeth_on_planets = 10,
-  approximate_number_of_teeth_on_sun = 20,
-  P = 30,
-  p_hole = 4,
-  p_fn = 100,
-  s_hole = 8,
-  s_fn = 4,
-  a_hole = 4,
-  a_fn = 4,
-  annulus = true,
-  sun = true,
-  planets = true,
-  flat = false
-);
+// planetary_gear_set(
+//   D = 120,
+//   T = 15,
+//   tol = 0,
+//   number_of_planets = 3,
+//   number_of_teeth_on_planets = 10,
+//   approximate_number_of_teeth_on_sun = 20,
+//   P = 30,
+//   p_hole = 4,
+//   p_fn = 100,
+//   s_hole = 8,
+//   s_fn = 4,
+//   a_hole = 4,
+//   a_fn = 4,
+//   annulus = true,
+//   sun = true,
+//   planets = true,
+//   flat = false
+// );
 
 module planetary_gear_set(
   D = 51.7, // outer diameter of ring
